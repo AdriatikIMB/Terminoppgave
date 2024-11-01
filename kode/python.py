@@ -5,7 +5,7 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///restaurant.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
-f
+
 # Define models
 class Reservation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
