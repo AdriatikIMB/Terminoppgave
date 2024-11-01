@@ -36,10 +36,10 @@ button:hover {
     background-color: #0056b3; /* Mørkere blå når musen holder over */
 }
 
-ul {
+div {
     list-style-type: none;
 }
 
-ul li {
+div li {
     margin: 5px 0;
 }
