@@ -6,7 +6,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///restaurant.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-# Define models
+# Definering av databasemodeller
 class Reservation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
@@ -19,7 +19,7 @@ class TakeawayOrder(db.Model):
     name = db.Column(db.String(100), nullable=False)
     dish = db.Column(db.String(100), nullable=False)
 
-# Create the database
+# Oppretting av databasen
 with app.app_context():
     db.create_all()
 
