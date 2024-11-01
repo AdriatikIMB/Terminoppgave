@@ -1,117 +1,139 @@
-// Sett minimum dato til dagens dato når siden lastes
-document.addEventListener("DOMContentLoaded", function() {
-    const today = new Date().toISOString().split("T")[0]; // Henter dagens dato
-    const dateInput = document.getElementById('date');
-    if (dateInput) {
-        dateInput.setAttribute('min', today); // Setter min-verdi for datovelger
+document.addEventListener('DOMContentLoaded', () => {
+    // Populerer tidspunktene i 15-minutters intervaller
+    populateTimeSlots();
+
+    // Håndterer innsending av reservasjonsskjemaet
+    const reservationForm = document.getElementById('reservationForm');
+    if (reservationForm) {
+        reservationForm.addEventListener('submit', handleReservationSubmit);
+    }
+
+    // Håndterer innsending av takeaway-skjemaet
+    const takeawayForm = document.getElementById('takeawayForm');
+    if (takeawayForm) {
+        takeawayForm.addEventListener('submit', handleTakeawaySubmit);
     }
 });
 
-// Handle reservation submission
-document.getElementById('reservationForm')?.addEventListener('submit', function(event) {
-    event.preventDefault(); // Prevent the default form submission
+// Funksjon for å generere 15-minutters tidsintervaller fra 15:30 til 22:00
+function populateTimeSlots() {
+    const timeSelect = document.getElementById('time');
+    if (!timeSelect) return;
 
-    // Get values from the form
-    const name = document.getElementById('name').value;
-    const people = parseInt(document.getElementById('people').value);
-    const time = document.getElementById('time').value;
-    const date = document.getElementById('date').value; // Hent datoen
+    let currentTime = new Date();
+    currentTime.setHours(15, 30, 0, 0);
 
-    // Name validation: Only letters and spaces
-    const namePattern = /^[a-zA-ZæøåÆØÅ\s]+$/;
-    if (!namePattern.test(name)) {
-        alert("Navnet kan bare inneholde bokstaver og mellomrom.");
-        return;
-    }
+    const endTime = new Date();
+    endTime.setHours(22, 0, 0, 0);
 
-    // Check that the number of people is within a reasonable range
-    if (people < 1 || people > 20) {
-        alert("Antall personer må være mellom 1 og 20.");
-        return;
-    }
-
-    // Submit reservation data via Fetch API
-    fetch('/reservations', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ date, time, name, people }),
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert("Reservasjonen ble bekreftet!");
-            document.getElementById('reservationForm').reset(); // Reset the form
-        } else {
-            alert("Det oppstod en feil ved bekreftelse av reservasjonen.");
-        }
-    })
-    .catch(error => console.error('Error:', error));
-});
-
-// Handle takeaway order submission
-document.getElementById('takeawayForm')?.addEventListener('submit', function(event) {
-    event.preventDefault();
-
-    const name = document.getElementById('takeawayName').value;
-    const dish = document.getElementById('dish').value;
-
-    // Name validation
-    const namePattern = /^[a-zA-ZæøåÆØÅ\s]+$/;
-    if (!namePattern.test(name)) {
-        alert("Navnet kan bare inneholde bokstaver og mellomrom.");
-        return;
-    }
-
-    // Submit takeaway order
-    fetch('/takeaway', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name, dish }),
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert("Takeaway-bestillingen ble bekreftet!");
-            document.getElementById('takeawayForm').reset();
-        } else {
-            alert("Det oppstod en feil ved bekreftelse av bestillingen.");
-        }
-    })
-    .catch(error => console.error('Error:', error));
-});
-
-// Display reservations
-function displayReservations() {
-    fetch('/reservations_list')
-    .then(response => response.json())
-    .then(data => {
-        const reservationsList = document.getElementById('reservations');
-        reservationsList.innerHTML = ''; // Clear existing entries
-        data.reservations.forEach(reservation => {
-            const li = document.createElement('li');
-            li.textContent = `${reservation.name} - ${reservation.date} ${reservation.time} for ${reservation.people} people`;
-            reservationsList.appendChild(li);
+    while (currentTime <= endTime) {
+        const timeOption = document.createElement('option');
+        timeOption.value = timeOption.textContent = currentTime.toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit'
         });
-    })
-    .catch(error => console.error('Error fetching reservations:', error));
+        timeSelect.appendChild(timeOption);
+        currentTime.setMinutes(currentTime.getMinutes() + 15);
+    }
 }
 
-// Display takeaway orders
-function displayTakeawayOrders() {
-    fetch('/takeaway_list')
-    .then(response => response.json())
-    .then(data => {
-        const takeawayOrdersList = document.getElementById('takeawayOrders');
-        takeawayOrdersList.innerHTML = ''; // Clear existing entries
-        data.takeawayOrders.forEach(order => {
-            const li = document.createElement('li');
-            li.textContent = `${order.name} ordered ${order.dish}`;
-            takeawayOrdersList.appendChild(li);
+// Funksjon for å håndtere innsending av reservasjoner
+async function handleReservationSubmit(event) {
+    event.preventDefault();
+
+    const data = {
+        name: document.getElementById('name').value,
+        people: parseInt(document.getElementById('people').value),
+        date: document.getElementById('date').value,
+        time: document.getElementById('time').value,
+        area: document.getElementById('area').value
+    };
+
+    try {
+        const response = await fetch('/reservations', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
         });
-    })
-    .catch(error => console.error('Error fetching takeaway orders:', error));
+
+        if (response.ok) {
+            alert('Reservasjonen ble lagt inn!');
+            reservationForm.reset();
+        } else {
+            alert('Noe gikk galt. Prøv igjen.');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Serverfeil. Prøv igjen senere.');
+    }
+}
+
+// Funksjon for å håndtere innsending av takeaway-bestillinger
+async function handleTakeawaySubmit(event) {
+    event.preventDefault();
+
+    const data = {
+        name: document.getElementById('takeawayName').value,
+        dish: document.getElementById('dish').value
+    };
+
+    try {
+        const response = await fetch('/takeaway', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+            alert('Takeaway-bestilling ble registrert!');
+            takeawayForm.reset();
+        } else {
+            alert('Noe gikk galt. Prøv igjen.');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Serverfeil. Prøv igjen senere.');
+    }
+}
+
+// Funksjon for å vise alle reservasjoner
+async function displayReservations() {
+    try {
+        const response = await fetch('/reservations_list');
+        if (response.ok) {
+            const data = await response.json();
+            const reservationsList = document.getElementById('reservations');
+            reservationsList.innerHTML = ''; // Tømmer eksisterende liste
+
+            data.reservations.forEach(reservation => {
+                const listItem = document.createElement('li');
+                listItem.textContent = `${reservation.date} - ${reservation.time} | ${reservation.name}, ${reservation.people} personer, Område: ${reservation.area}`;
+                reservationsList.appendChild(listItem);
+            });
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Kunne ikke laste reservasjoner.');
+    }
+}
+
+// Funksjon for å vise alle takeaway-bestillinger
+async function displayTakeawayOrders() {
+    try {
+        const response = await fetch('/takeaway_list');
+        if (response.ok) {
+            const data = await response.json();
+            const takeawayList = document.getElementById('takeawayList');
+            takeawayList.innerHTML = ''; // Tømmer eksisterende liste
+
+            data.takeawayOrders.forEach(order => {
+                const listItem = document.createElement('li');
+                listItem.textContent = `Navn: ${order.name} | Rett: ${order.dish}`;
+                takeawayList.appendChild(listItem);
+            });
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Kunne ikke laste takeaway-bestillinger.');
+    }
 }

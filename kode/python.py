@@ -1,9 +1,10 @@
+# app.py
 from flask import Flask, render_template, request, jsonify
 from datetime import datetime
 
 app = Flask(__name__)
 
-# Simulated data storage
+# Simulert data-lagring
 reservations = []
 takeaway_orders = []
 
