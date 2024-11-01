@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</head>
+<body>
+    <header>
+        <h1>Restaurant System</h1>
+    </header>
+    <main>
+        <div id="menu">
+            <h2>Hovedmeny</h2>
+            <a href="{{ url_for('reservation') }}"><button>Reserver bord</button></a>
+            <a href="{{ url_for('menu') }}"><button>Vis restaurantmeny</button></a>
+            <a href="{{ url_for('takeaway') }}"><button>Bestill takeaway</button></a>
+            <a href="{{ url_for('reservations_list') }}"><button>Vis alle reservasjoner</button></a>
+            <a href="{{ url_for('takeaway_list') }}"><button>Vis alle takeaway-bestillinger</button></a>
+        </div>
+    </main>
+</body>
+</html>
