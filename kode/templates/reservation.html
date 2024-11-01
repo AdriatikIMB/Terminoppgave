@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reserver Bord</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-    
 </head>
 <body>
     <header>
@@ -13,6 +12,8 @@
     </header>
     <main>
         <form id="reservationForm">
+            <label for="date">Dato:</label>
+            <input type="date" id="date" required>
             <label for="name">Navn:</label>
             <input type="text" id="name" required>
             <label for="people">Antall personer:</label>
@@ -21,7 +22,6 @@
             <input type="time" id="time" required>
             <label for="area">Velg sitteområde:</label>
             <select id="area">
-                
                 <option value="Terracotta">Terracotta</option>
                 <option value="Lai Bai">Lai Bai</option>
                 <option value="Luna">Luna</option>
