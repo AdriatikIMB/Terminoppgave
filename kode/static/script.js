@@ -10,8 +10,20 @@ document.addEventListener('DOMContentLoaded', () => {
 // Fyller inn tilgjengelige tider for reservasjoner
 function populateTimeSlots() {
     const timeSelect = document.getElementById('time');
-    if (!timeSelect) return;
+    const dateInput = document.getElementById('date');
+    if (!timeSelect || !dateInput) return;
 
+    // Setter dagens dato
+    const today = new Date();
+    const todayString = today.toISOString().split("T")[0]; // Formaterer datoen til YYYY-MM-DD
+    dateInput.setAttribute('min', todayString); // Setter minimumsdato til i dag
+
+    // Sett maksimumsdato til én måned frem
+    const maxDate = new Date();
+    maxDate.setMonth(today.getMonth() + 1);
+    dateInput.setAttribute('max', maxDate.toISOString().split("T")[0]);
+
+    // Setter opp standard tid
     let currentTime = new Date();
     currentTime.setHours(15, 30, 0, 0); // Starttid
 
@@ -65,45 +77,4 @@ async function handleReservationSubmit(event) {
         const errorData = await response.json();
         alert(`Feil: ${errorData.error}`);
     }
-}
-
-// Håndterer innsending av takeaway-bestilling
-async function handleTakeawaySubmit(event) {
-    event.preventDefault();
-
-    const takeawayData = {
-        name: document.getElementById('takeawayName').value,
-        dish: document.getElementById('dish').value
-        // Vi trenger ikke å inkludere reservationId
-    };
-
-    const response = await fetch('/takeaway', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(takeawayData)
-    });
-
-    if (response.ok) {
-        alert('Takeaway-bestilling bekreftet!');
-    }else {
-        const errorData = await response.json();
-        alert(`Feil: ${errorData.error}`);
-    }
-}
-
-// Viser alle takeaway-bestillinger
-async function displayTakeawayOrders() {
-    const response = await fetch('/takeaway_list');
-    const data = await response.json();
-    const takeawayList = document.getElementById('takeawayList');
-
-    takeawayList.innerHTML = ''; // Tøm listen før vi viser nye data
-
-    data.takeawayOrders.forEach(order => {
-        const listItem = document.createElement('li');
-        listItem.textContent = `${order.name} bestilte ${order.dish}`;
-        takeawayList.appendChild(listItem);
-    });
 }
