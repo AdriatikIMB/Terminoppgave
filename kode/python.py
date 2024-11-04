@@ -25,7 +25,7 @@ def add_reservation():
     area = data['area']
     people = data['people']
 
-    # Sjekk datoen
+    # Check the date
     reservation_date = datetime.strptime(data['date'], "%Y-%m-%d").date()
     today = datetime.today().date()
     max_date = today + timedelta(days=30)
@@ -53,6 +53,24 @@ def add_reservation():
 @app.route('/reservations_list', methods=['GET'])
 def reservations_list():
     return jsonify({'reservations': reservations})
+
+@app.route('/takeaway')
+def takeaway():
+    return render_template('takeaway.html')
+
+@app.route('/takeaway_orders', methods=['POST'])
+def add_takeaway_order():
+    data = request.json
+    order = {
+        'name': data['name'],
+        'dish': data['dish']
+    }
+    takeaway_orders.append(order)
+    return jsonify({'success': True})
+
+@app.route('/takeaway_list', methods=['GET'])
+def takeaway_list():
+    return jsonify({'takeaway_orders': takeaway_orders})
 
 if __name__ == '__main__':
     app.run(debug=True)
