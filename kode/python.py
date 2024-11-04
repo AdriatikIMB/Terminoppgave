@@ -1,10 +1,7 @@
-# app.py
 from flask import Flask, render_template, request, jsonify
-from datetime import datetime
 
 app = Flask(__name__)
 
-# Simulert data-lagring
 reservations = []
 takeaway_orders = []
 
@@ -35,11 +32,19 @@ def get_takeaway_list():
 @app.route('/reservations', methods=['POST'])
 def add_reservation():
     data = request.json
+    area = data['area']
+    people = data['people']
+
+    current_count = sum(r['people'] for r in reservations if r['area'] == area)
+    if current_count + people > 50:
+        return jsonify({'success': False, 'error': 'Dette sitteområdet er fullt.'}), 400
+
     reservation = {
         'name': data['name'],
-        'people': data['people'],
+        'people': people,
         'date': data['date'],
         'time': data['time'],
+        'area': area
     }
     reservations.append(reservation)
     return jsonify({'success': True})
