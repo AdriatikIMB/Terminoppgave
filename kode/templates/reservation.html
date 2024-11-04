@@ -18,8 +18,11 @@
             <label for="name">Navn:</label>
             <input type="text" id="name" required>
 
+            <label for="phone">Telefonnummer:</label>
+            <input type="tel" id="phone" required pattern="\+47[0-9]{8}">
+            <small> (8 sifre etter +47)</small>
+
             <label for="people">Antall personer:</label>
-            <!-- Sett minimum til 1 og maksimum til 50 -->
             <input type="number" id="people" required min="1" max="50">
 
             <label for="time">Tidspunkt:</label>

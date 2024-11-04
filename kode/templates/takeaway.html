@@ -11,16 +11,18 @@
         <h1>Bestill Takeaway</h1>
     </header>
     <main>
-        <form id="takeawayForm">
+        <form id="takeawayForm" onsubmit="handleTakeawaySubmit(event)">
             <label for="takeawayName">Navn:</label>
             <input type="text" id="takeawayName" required>
+
             <label for="dish">Velg rett:</label>
             <select id="dish">
                 <option value="Pizza">Pizza - 120 NOK</option>
                 <option value="Burger">Burger - 90 NOK</option>
-                <option value="Salad">Salad - 70 NOK</option>
+                <option value="Salat">Salat - 70 NOK</option>
                 <option value="Pasta">Pasta - 110 NOK</option>
             </select>
+
             <button type="submit">Bestill</button>        
         </form>
         <a href="{{ url_for('index') }}"><button>Tilbake til hovedmeny</button></a>
