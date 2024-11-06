@@ -30,15 +30,19 @@ def add_reservation():
     today = datetime.today().date()
     max_date = today + timedelta(days=30)
 
+    # Ensure the reservation is in the future and within 30 days
     if reservation_date < today or reservation_date > max_date:
-        return jsonify({'success': False, 'error': f'Datoen må være i fremtiden og innen 30 dager.'}), 400
+        return jsonify({'success': False, 'error': 'Datoen må være i fremtiden og innen 30 dager.'}), 400
 
+    # Calculate the number of people already reserved in the same area
     current_count = sum(r['people'] for r in reservations if r['area'] == area)
-    available_seats = 50 - current_count
+    available_seats = 50 - current_count  # Assuming a max of 50 people per area
 
+    # Check if there are enough available seats in the selected area
     if current_count + people > 50:
         return jsonify({'success': False, 'error': f'Dette sitteområdet er fullt. Tilgjengelige plasser: {available_seats}'}), 500
 
+    # Create a new reservation entry
     reservation = {
         'name': data['name'],
         'phone': data['phone'],

@@ -2,6 +2,8 @@ document.addEventListener('DOMContentLoaded', () => {
     populateTimeSlots();
 
     const reservationForm = document.getElementById('reservationForm');
+    const takeawayForm = document.getElementById('takeawayForm');
+
     if (reservationForm) {
         reservationForm.addEventListener('submit', handleReservationSubmit);
     }
@@ -41,13 +43,50 @@ function populateTimeSlots() {
     }
 }
 
-// Håndterer innsending av reservasjoner
+
+
+
+
+
+
+
+
+
+
+// Håndterer innsending av takeaway-bestilling
+async function handleTakeawaySubmit(event) {
+    event.preventDefault();
+
+    const name = document.getElementById('takeawayName').value;
+    const dish = document.getElementById('dish').value;
+
+    const takeawayData = {
+        name: name,
+        dish: dish
+    };
+
+    const response = await fetch('/takeaway_orders', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(takeawayData)
+    });
+
+    if (response.ok) {
+        alert('Takeaway bestilling er bekreftet!');
+    } else {
+        const errorData = await response.json();
+        alert(`Feil: ${errorData.error}`);
+    }
+}
+
+// Håndterer innsending av reservasjon
 async function handleReservationSubmit(event) {
     event.preventDefault();
 
-    const phone = document.getElementById('phone').value;
-
     // Valider telefonnummerformatet
+    const phone = document.getElementById('phone').value;
     const phonePattern = /^\+47[0-9]{8}$/;
     if (!phonePattern.test(phone)) {
         alert('Ugyldig telefonnummer. Bruk formatet: +47XXXXXXXX.');
