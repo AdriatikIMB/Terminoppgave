@@ -1,11 +1,15 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Fyller inn tilgjengelige tider for reservasjoner
     populateTimeSlots();
 
     const reservationForm = document.getElementById('reservationForm');
-    const takeawayForm = document.getElementById('takeawayForm');
-
     if (reservationForm) {
         reservationForm.addEventListener('submit', handleReservationSubmit);
+    }
+
+    const takeawayForm = document.getElementById('takeawayForm');
+    if (takeawayForm) {
+        takeawayForm.addEventListener('submit', handleTakeawaySubmit);
     }
 });
 
@@ -17,20 +21,19 @@ function populateTimeSlots() {
 
     // Setter dagens dato
     const today = new Date();
-    const todayString = today.toISOString().split("T")[0]; // Formaterer datoen til YYYY-MM-DD
-    dateInput.setAttribute('min', todayString); // Setter minimumsdato til i dag
+    const todayString = today.toISOString().split("T")[0];
+    dateInput.setAttribute('min', todayString);
 
     // Sett maksimumsdato til én måned frem
     const maxDate = new Date();
     maxDate.setMonth(today.getMonth() + 1);
     dateInput.setAttribute('max', maxDate.toISOString().split("T")[0]);
 
-    // Setter opp standard tid
+    // Setter opp starttid og sluttid for reservasjoner
     let currentTime = new Date();
-    currentTime.setHours(15, 30, 0, 0); // Starttid
-
+    currentTime.setHours(15, 30, 0, 0); // Starttidspunkt for reservasjoner
     const endTime = new Date();
-    endTime.setHours(22, 0, 0, 0); // Sluttid
+    endTime.setHours(22, 0, 0, 0); // Sluttidspunkt for reservasjoner (kl 22:00)
 
     while (currentTime <= endTime) {
         const timeOption = document.createElement('option');
@@ -39,45 +42,7 @@ function populateTimeSlots() {
             minute: '2-digit'
         });
         timeSelect.appendChild(timeOption);
-        currentTime.setMinutes(currentTime.getMinutes() + 15); // Øker med 15 minutter
-    }
-}
-
-
-
-
-
-
-
-
-
-
-
-// Håndterer innsending av takeaway-bestilling
-async function handleTakeawaySubmit(event) {
-    event.preventDefault();
-
-    const name = document.getElementById('takeawayName').value;
-    const dish = document.getElementById('dish').value;
-
-    const takeawayData = {
-        name: name,
-        dish: dish
-    };
-
-    const response = await fetch('/takeaway_orders', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(takeawayData)
-    });
-
-    if (response.ok) {
-        alert('Takeaway bestilling er bekreftet!');
-    } else {
-        const errorData = await response.json();
-        alert(`Feil: ${errorData.error}`);
+        currentTime.setMinutes(currentTime.getMinutes() + 15); // Legg til 15 minutter
     }
 }
 
@@ -99,7 +64,8 @@ async function handleReservationSubmit(event) {
         date: document.getElementById('date').value,
         time: document.getElementById('time').value,
         area: document.getElementById('area').value,
-        people: parseInt(document.getElementById('people').value)
+        people: parseInt(document.getElementById('people').value),
+        duration: parseInt(document.getElementById('duration').value)  // Legger til varighet
     };
 
     const response = await fetch('/reservations', {
@@ -115,5 +81,29 @@ async function handleReservationSubmit(event) {
     } else {
         const errorData = await response.json();
         alert(`Feil: ${errorData.error}`);
+    }
+}
+
+// Håndterer innsending av takeaway-bestilling
+async function handleTakeawaySubmit(event) {
+    event.preventDefault();
+
+    const takeawayData = {
+        name: document.getElementById('takeawayName').value,
+        dish: document.getElementById('takeawayDish').value
+    };
+
+    const response = await fetch('/takeaway_orders', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(takeawayData)
+    });
+
+    if (response.ok) {
+        alert('Takeaway-bestilling bekreftet!');
+    } else {
+        alert('Noe gikk galt med takeaway-bestillingen.');
     }
 }

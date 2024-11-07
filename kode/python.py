@@ -24,6 +24,7 @@ def add_reservation():
     data = request.json
     area = data['area']
     people = data['people']
+    duration = data['duration']
 
     # Check the date
     reservation_date = datetime.strptime(data['date'], "%Y-%m-%d").date()
@@ -41,6 +42,11 @@ def add_reservation():
     # Check if there are enough available seats in the selected area
     if current_count + people > 50:
         return jsonify({'success': False, 'error': f'Dette sitteområdet er fullt. Tilgjengelige plasser: {available_seats}'}), 500
+    
+      # Calculate end time
+    start_time = datetime.strptime(data['time'], "%H:%M")
+    end_time = start_time + timedelta(hours=duration)
+    end_time_str = end_time.strftime("%H:%M")  # Format end_time as a string
 
     # Create a new reservation entry
     reservation = {
@@ -49,6 +55,7 @@ def add_reservation():
         'people': people,
         'date': data['date'],
         'time': data['time'],
+        'end_time': end_time_str,  # Legger til end_time i reservasjonen
         'area': area
     }
     reservations.append(reservation)
