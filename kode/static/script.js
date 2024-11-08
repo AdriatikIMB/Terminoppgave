@@ -6,11 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (reservationForm) {
         reservationForm.addEventListener('submit', handleReservationSubmit);
     }
-
-    const takeawayForm = document.getElementById('takeawayForm');
-    if (takeawayForm) {
-        takeawayForm.addEventListener('submit', handleTakeawaySubmit);
-    }
 });
 
 // Fyller inn tilgjengelige tider for reservasjoner
@@ -35,7 +30,11 @@ function populateTimeSlots() {
     const endTime = new Date();
     endTime.setHours(22, 0, 0, 0); // Sluttidspunkt for reservasjoner (kl 22:00)
 
-    while (currentTime <= endTime) {
+    // Maks tid for start for å tillate varigheter
+    const maxStartTime = new Date();
+    maxStartTime.setHours(18, 0, 0); // Den siste mulige starttiden for 4 timer varighet (18:00 for 22:00 slutt)
+
+    while (currentTime <= maxStartTime) {
         const timeOption = document.createElement('option');
         timeOption.value = timeOption.textContent = currentTime.toLocaleTimeString([], {
             hour: '2-digit',
@@ -45,6 +44,7 @@ function populateTimeSlots() {
         currentTime.setMinutes(currentTime.getMinutes() + 15); // Legg til 15 minutter
     }
 }
+
 
 // Håndterer innsending av reservasjon
 async function handleReservationSubmit(event) {
@@ -86,13 +86,23 @@ async function handleReservationSubmit(event) {
 
 // Håndterer innsending av takeaway-bestilling
 async function handleTakeawaySubmit(event) {
-    event.preventDefault();
+    event.preventDefault(); // Hindrer siden fra å laste på nytt
+
+    const name = document.getElementById('takeawayName').value;
+    const dish = document.getElementById('dish').value; // Endret fra takeawayDish til dish
+
+    // Sjekk at navn og rett er fylt ut
+    if (!name || !dish) {
+        alert('Vennligst fyll ut både navn og rett.');
+        return;
+    }
 
     const takeawayData = {
-        name: document.getElementById('takeawayName').value,
-        dish: document.getElementById('takeawayDish').value
+        name: name,
+        dish: dish
     };
 
+    // Sender dataene til serveren via fetch
     const response = await fetch('/takeaway_orders', {
         method: 'POST',
         headers: {
@@ -103,7 +113,34 @@ async function handleTakeawaySubmit(event) {
 
     if (response.ok) {
         alert('Takeaway-bestilling bekreftet!');
+        document.getElementById('takeawayForm').reset(); // Tømmer skjemaet etter bestilling
     } else {
         alert('Noe gikk galt med takeaway-bestillingen.');
+    }
+}
+
+// Funksjon for å vise takeaway-bestillinger (kan brukes på "Vis Takeaway-bestillinger"-knappen)
+async function displayTakeawayOrders() {
+    const response = await fetch('/takeaway_list', {
+        method: 'GET'
+    });
+
+    if (response.ok) {
+        const data = await response.json();
+        const orders = data.takeaway_orders;
+        const listContainer = document.getElementById('takeawayList');
+        listContainer.innerHTML = ''; // Tømmer eksisterende liste
+
+        if (orders.length === 0) {
+            listContainer.innerHTML = '<li>Ingen takeaway-bestillinger funnet.</li>';
+        } else {
+            orders.forEach(order => {
+                const listItem = document.createElement('li');
+                listItem.textContent = `${order.name} bestilte ${order.dish}`;
+                listContainer.appendChild(listItem);
+            });
+        }
+    } else {
+        alert('Kunne ikke hente takeaway-bestillinger.');
     }
 }

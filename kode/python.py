@@ -43,10 +43,15 @@ def add_reservation():
     if current_count + people > 50:
         return jsonify({'success': False, 'error': f'Dette sitteområdet er fullt. Tilgjengelige plasser: {available_seats}'}), 500
     
-      # Calculate end time
+    # Calculate end time
     start_time = datetime.strptime(data['time'], "%H:%M")
     end_time = start_time + timedelta(hours=duration)
     end_time_str = end_time.strftime("%H:%M")  # Format end_time as a string
+
+    # Check if the reservation end time exceeds 22:00
+    latest_end_time = datetime.strptime('22:00', "%H:%M")
+    if end_time > latest_end_time:
+        return jsonify({'success': False, 'error': 'Reservasjonen kan ikke gå utover kl. 22:00.'}), 400
 
     # Create a new reservation entry
     reservation = {
@@ -60,6 +65,7 @@ def add_reservation():
     }
     reservations.append(reservation)
     return jsonify({'success': True, 'available_seats': available_seats - people})
+
 
 @app.route('/reservations_list', methods=['GET'])
 def reservations_list():
