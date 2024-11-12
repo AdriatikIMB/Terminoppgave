@@ -32,7 +32,7 @@ function populateTimeSlots() {
 
     // Maks tid for start for å tillate varigheter
     const maxStartTime = new Date();
-    maxStartTime.setHours(18, 0, 0); // Den siste mulige starttiden for 4 timer varighet (18:00 for 22:00 slutt)
+    maxStartTime.setHours(22, 0, 0); // Den siste mulige starttiden for 4 timer varighet (18:00 for 22:00 slutt)
 
     while (currentTime <= maxStartTime) {
         const timeOption = document.createElement('option');

@@ -51,7 +51,7 @@ def add_reservation():
     # Check if the reservation end time exceeds 22:00
     latest_end_time = datetime.strptime('22:00', "%H:%M")
     if end_time > latest_end_time:
-        return jsonify({'success': False, 'error': 'Reservasjonen kan ikke gå utover kl. 22:00.'}), 400
+        return jsonify({'success': False, 'error': 'Restauranten stenger klokka 22:00.'}), 400
 
     # Create a new reservation entry
     reservation = {
