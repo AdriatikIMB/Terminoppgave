@@ -7,7 +7,7 @@ app = Flask(__name__)
 reservations = []
 takeaway_orders = []
 
-@app.route('/index')
+@app.route('/')
 def index():
     return render_template('index.html')
 
