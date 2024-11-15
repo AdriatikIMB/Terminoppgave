@@ -15,6 +15,10 @@ def index():
 def menu():
     return render_template('menu.html')
 
+@app.route('/contact')
+def contact():
+    return render_template('contact.html')
+
 @app.route('/reservation')
 def reservation():
     return render_template('reservation.html')
@@ -65,7 +69,6 @@ def add_reservation():
     }
     reservations.append(reservation)
     return jsonify({'success': True, 'available_seats': available_seats - people})
-
 
 @app.route('/reservations_list', methods=['GET'])
 def reservations_list():

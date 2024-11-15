@@ -78,17 +78,7 @@ form input::placeholder {
     color: #aaa;
 }
 
-/* Skjema-knapp */
-button[type="submit"] {
-    background-color: #3498db;
-    color: white;
-    padding: 12px 20px;
-    font-size: 18px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    width: 100%;
-}
+
 
 button[type="submit"]:hover {
     background-color: #2980b9;
@@ -116,4 +106,48 @@ a button:hover {
     button[type="submit"], a button {
         font-size: 16px;
     }
+}
+
+
+#additionalNotes {
+    width: calc(100% - 20px); /* Full bredde med litt padding */
+    height: 60px; /* Juster høyden etter behov */
+    padding: 5px 10px; /* Mindre padding på toppen og bunnen, standard på sidene */
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    resize: vertical; /* Lar brukeren justere høyden */
+    margin-top: 5px; /* Mindre margin på toppen */
+    margin-bottom: -4px; /* Mindre margin på bunnen */
+}
+
+
+
+.date-time-container {
+    display: flex;
+    justify-content: space-between; /* Gir rom mellom elementene */
+    gap: 20px; /* Juster avstanden mellom elementene */
+    align-items: flex-start; /* Juster toppkanten av elementene */
+    margin-bottom: 20px; /* Avstand under raden */
+}
+
+.date-container, .time-container {
+    flex: 1; /* Gir begge elementene lik bredde */
+}
+
+.date-container label, 
+.time-container label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #333;
+}
+
+.date-container input,
+.time-container select {
+    width: 100%; /* Full bredde i hver container */
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
 }
