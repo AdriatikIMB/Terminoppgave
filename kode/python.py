@@ -26,7 +26,6 @@ def reservation():
 @app.route('/reservations', methods=['POST'])
 def add_reservation():
     data = request.json
-    area = data['area']
     people = data['people']
     duration = data['duration']
 
@@ -39,14 +38,6 @@ def add_reservation():
     if reservation_date < today or reservation_date > max_date:
         return jsonify({'success': False, 'error': 'Datoen må være i fremtiden og innen 30 dager.'}), 400
 
-    # Calculate the number of people already reserved in the same area
-    current_count = sum(r['people'] for r in reservations if r['area'] == area)
-    available_seats = 50 - current_count  # Assuming a max of 50 people per area
-
-    # Check if there are enough available seats in the selected area
-    if current_count + people > 50:
-        return jsonify({'success': False, 'error': f'Dette sitteområdet er fullt. Tilgjengelige plasser: {available_seats}'}), 500
-    
     # Calculate end time
     start_time = datetime.strptime(data['time'], "%H:%M")
     end_time = start_time + timedelta(hours=duration)
@@ -64,11 +55,10 @@ def add_reservation():
         'people': people,
         'date': data['date'],
         'time': data['time'],
-        'end_time': end_time_str,  # Legger til end_time i reservasjonen
-        'area': area
+        'end_time': end_time_str
     }
     reservations.append(reservation)
-    return jsonify({'success': True, 'available_seats': available_seats - people})
+    return jsonify({'success': True})
 
 @app.route('/reservations_list', methods=['GET'])
 def reservations_list():

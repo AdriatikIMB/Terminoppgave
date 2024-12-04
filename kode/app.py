@@ -23,6 +23,11 @@ def index():
 def menu():
     return render_template('menu.html')
 
+@app.route('/contact')
+def contact():
+    return render_template('contact.html')
+
+
 # Reservation page
 @app.route('/reservation', methods=['GET', 'POST'])
 def reservation():
