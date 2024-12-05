@@ -1,22 +1,25 @@
-from flask import Blueprint, request, render_template
+from flask import Flask, render_template, request 
 
-# Definer en Blueprint for kontaktskjemaet
-contact_bp = Blueprint('contact', __name__)
+app = Flask(__name__)
 
-# Rute for å vise kontaktskjemaet
-@contact_bp.route('/contact', methods=['GET'])
-def contact_form():
+@app.route("/")
+def contact():
+    return render_template("contact.html")
+
+if __name__ == "__main__":
+    app.run(debug=True)
+
+    
+@app.route('/contact', methods=['GET', 'POST'])
+def contact():
+    if request.method == 'POST':
+        name = request.form['name']
+        email = request.form['email']
+        message = request.form['message']
+        
+        # Her kan du lagre data eller sende e-post
+        print(f"Navn: {name}, E-post: {email}, Melding: {message}")
+        
+        return "Takk for at du kontaktet oss! Vi vil svare deg snart."
+    
     return render_template('contact.html')
-
-# Rute for å behandle kontaktskjemaet
-@contact_bp.route('/submit_contact', methods=['POST'])
-def submit_contact():
-    name = request.form['name']
-    email = request.form['email']
-    message = request.form['message']
-    
-    # Her kan du lagre meldingen eller gjøre noe annet med den
-    print(f"Navn: {name}, E-post: {email}, Melding: {message}")
-    
-    # Returner en bekreftelse til brukeren
-    return "Takk for at du kontaktet oss! Vi vil svare deg snart."
