@@ -15,7 +15,7 @@ def index():
 def menu():
     return render_template('menu.html')
 
-@app.route('/contact')
+@app.route('/contact' , methods=['GET', 'POST'])
 def contact():
     return render_template('contact.html')
 

@@ -3,33 +3,21 @@ import mysql.connector
 
 app = Flask(__name__)
 
-# Database connection details
+# Funksjon for databaseforbindelse
 def get_db_connection():
     return mysql.connector.connect(
         host="localhost",
-        user="root",  
-        password="your_password",  
+        user="root",  # Bruk riktig brukernavn
+        password="your_password",  # Bruk riktig passord
         database="restaurant"
     )
 
+# Hjemmeside med skjema for reservasjon
 @app.route('/')
 def index():
     return render_template('index.html')
 
-@app.route('/menu')
-def menu():
-    return render_template('menu.html')
-
-@app.route('/contact', methods=['GET', 'POST'])
-def contact():
-    if request.method == 'POST':
-        name = request.form['name']
-        email = request.form['email']
-        message = request.form['message']
-        print(f"Navn: {name}, E-post: {email}, Melding: {message}")
-        return "Takk for at du kontaktet oss!"
-    return render_template('contact.html')
-
+# Skjema for reservasjon
 @app.route('/reservation', methods=['GET', 'POST'])
 def reservation():
     if request.method == 'POST':
@@ -40,6 +28,7 @@ def reservation():
         time = request.form['time']
         area = request.form['area']
 
+        # Lagre reservasjonen i databasen
         conn = get_db_connection()
         cursor = conn.cursor()
         cursor.execute("INSERT INTO reservations (name, phone, people, date, time, area) VALUES (%s, %s, %s, %s, %s, %s)",
@@ -47,9 +36,33 @@ def reservation():
         conn.commit()
         cursor.close()
         conn.close()
-        return redirect(url_for('index'))
+
+        return redirect(url_for('contact', name=name))  # Etter reservasjonen er sendt, gå til kontaktinformasjonsskjemaet
+
     return render_template('reservation.html')
 
+# Skjema for kontaktinformasjon
+@app.route('/contact', methods=['GET', 'POST'])
+def contact():
+    print("TEST!!!")
+    if request.method == 'POST':
+        name = request.form['name']
+        email = request.form['email']
+        phone = request.form['phone']
+        message = request.form['message']
+
+        # Lagre kontaktinformasjonen i databasen
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO contact_info (name, email, phone, message) VALUES (%s, %s, %s, %s)",
+                       (name, email, phone, message))
+        conn.commit()
+        cursor.close()
+        conn.close() 
+
+    return render_template('contact.html')
+
+# Vise alle reservasjoner (for administrasjon)
 @app.route('/reservations')
 def reservations():
     conn = get_db_connection()
@@ -59,33 +72,6 @@ def reservations():
     cursor.close()
     conn.close()
     return render_template('reservations_list.html', reservations=reservations)
-
-@app.route('/takeaway')
-def takeaway():
-    return render_template('takeaway.html')
-
-@app.route('/takeaway_orders', methods=['POST'])
-def add_takeaway_order():
-    data = request.json
-    name = data['name']
-    dish = data['dish']
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute("INSERT INTO takeaway_orders (name, dish) VALUES (%s, %s)", (name, dish))
-    conn.commit()
-    cursor.close()
-    conn.close()
-    return jsonify({'success': True})
-
-@app.route('/takeaway_list')
-def takeaway_list():
-    conn = get_db_connection()
-    cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM takeaway_orders")
-    takeaway_orders = cursor.fetchall()
-    cursor.close()
-    conn.close()
-    return render_template('takeaway_list.html', takeaway_orders=takeaway_orders)
 
 if __name__ == '__main__':
     app.run(debug=True)
