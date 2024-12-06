@@ -25,5 +25,3 @@ CREATE TABLE IF NOT EXISTS reservations (
 );
 
 
-INSERT INTO contact_info (name, email, phone, message) 
-VALUES ('John Doe', 'john.doe@example.com', '1234567890', 'I would like to make a reservation.');
