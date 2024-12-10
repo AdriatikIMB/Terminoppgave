@@ -14,7 +14,6 @@
             <th>Antall personer</th>
             <th>Dato</th>
             <th>Tid</th>
-            <th>Område</th>
         </tr>
         {% for reservation in reservations %}
         <tr>
@@ -23,7 +22,6 @@
             <td>{{ reservation.people }}</td>
             <td>{{ reservation.date }}</td>
             <td>{{ reservation.time }}</td>
-            <td>{{ reservation.area }}</td>
         </tr>
         {% endfor %}
     </table>
