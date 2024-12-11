@@ -7,12 +7,14 @@ app = Flask(__name__)
 # Funksjon for databaseforbindelse
 def get_db_connection():
     return mysql.connector.connect(
-        host="localhost",
-        port=5000,
-        user="adriatik",  
-        password="Adriatik.123",  
-        database="restaurant"  
+        user="adriatik",
+        password="Adriatik.123",
+        database="restaurant",
+#        unix_socket="/run/mysqld/mysqld.sock",  
+        host="10.2.4.76",  
+        port=3306  
     )
+
 
 @app.route('/')
 def index():
@@ -28,13 +30,12 @@ def reservation():
             people = int(request.form['people'])
             date = request.form['date']
             time = request.form['time']
-            area = request.form.get('area', 'Default')  # Hvis det er et ekstra felt
 
             conn = get_db_connection()
             cursor = conn.cursor()
-            cursor.execute("""INSERT INTO reservations (name, phone, people, date, time, area) 
+            cursor.execute("""INSERT INTO reservations (name, phone, people, date, time,) 
                               VALUES (%s, %s, %s, %s, %s, %s)""", 
-                           (name, phone, people, date, time, area))
+                           (name, phone, people, date, time,))
             conn.commit()
             cursor.close()
             conn.close()
