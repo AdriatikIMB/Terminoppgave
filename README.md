@@ -69,61 +69,7 @@ Følg trinnene nedenfor for å sette opp applikasjonen på din lokale maskin.
 - MySQL server
 - En nettleser som støtter HTML5 og CSS3
 
-### Installere
 
-1. Klon dette repository:
-   ```bash
-   git clone https://github.com/brukernavn/restaurant-web-app.git
-Naviger til prosjektmappen:
-
-bash
-Kopier kode
-cd restaurant-web-app
-Installer nødvendige Python-pakker:
-
-bash
-Kopier kode
-pip install -r requirements.txt
-Opprett en MySQL-database med følgende kommando:
-
-sql
-Kopier kode
-CREATE DATABASE restaurant;
-Opprett tabellene som trengs for applikasjonen i databasen:
-
-sql
-Kopier kode
-CREATE TABLE contact_info (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100),
-    email VARCHAR(100),
-    phone VARCHAR(20),
-    message TEXT
-);
-
-CREATE TABLE reservations (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100),
-    phone VARCHAR(20),
-    people INT,
-    date DATE,
-    time TIME
-);
-
-CREATE TABLE takeaway_orders (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100),
-    dish VARCHAR(100)
-);
-Sett opp Flask-applikasjonen:
-
-Rediger config.py (hvis den eksisterer) eller sett nødvendige miljøvariabler for å koble til din MySQL-database (bruk riktig vert, port, brukernavn og passord).
-Start Flask-serveren:
-
-bash
-Kopier kode
-flask run
-Serveren bør være tilgjengelig på http://localhost:5000.
 
 ### Bruk
 Hovedmeny: Når du åpner applikasjonen i nettleseren, vil du se hovedmenyen med alternativer for å reservere bord, se menyen og bestille takeaway.
@@ -153,4 +99,9 @@ Sjekk at du bruker riktig databasebruker og passord i appen.
 
 5. Feil i brukergrensesnittet
 Hvis det er problemer med at tidspunktene for reservasjon ikke vises eller skjemaene ikke sendes inn riktig, sjekk JavaScript-koden som håndterer skjemaet og tidspunktene.
+
+
+
+flask run
+Serveren bør være tilgjengelig på http://localhost:5000.
 
