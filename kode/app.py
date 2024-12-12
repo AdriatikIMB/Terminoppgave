@@ -43,7 +43,7 @@ def contact():
             conn.commit()
             cursor.close()
             conn.close()
-            return "Takk for at du kontaktet oss! Vi vil svare deg snart."
+            return "Takk for at du reserverte bord!"
         except Exception as e:
             print(f"Error: {e}")
             return "Error in sending message. Please try again.", 500
@@ -85,20 +85,6 @@ def reservation():
 
     return render_template('reservation.html')
 
-# Rute for visning av reservasjoner (liste)
-@app.route('/reservation_list', methods=['GET'])
-def reservation_list():
-    try:
-        conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM reservations")
-        rows = cursor.fetchall()
-        cursor.close()
-        conn.close()
-        return render_template('reservation_list.html', reservations=rows)
-    except Exception as e:
-        print(f"Error: {e}")
-        return "Error retrieving reservations.", 500
 
 # Rute for å håndtere takeaway-bestillinger
 @app.route('/takeaway')
