@@ -1,6 +1,6 @@
-from flask import Flask, render_template, request, redirect, url_for
-import mysql.connector
+from flask import Flask, render_template, request, jsonify, redirect, url_for
 from datetime import datetime, timedelta
+import mysql.connector
 
 app = Flask(__name__)
 
@@ -10,17 +10,47 @@ def get_db_connection():
         user="adriatik",
         password="Adriatik.123",
         database="restaurant",
-#        unix_socket="/run/mysqld/mysqld.sock",  
         host="10.2.4.76",  
-        port=3306  
+        port=3306
     )
 
-
+# Rute for hjem
 @app.route('/')
 def index():
     return render_template('index.html')
 
-# Rute for reservasjon
+# Rute for meny
+@app.route('/menu')
+def menu():
+    return render_template('menu.html')
+
+# Rute for kontakt
+@app.route('/contact', methods=['GET', 'POST'])
+def contact():
+    if request.method == 'POST':
+        name = request.form['name']
+        email = request.form['email']
+        phone = request.form['phone']
+        message = request.form['message']
+
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute("""
+                INSERT INTO contact_info (name, email, phone, message)
+                VALUES (%s, %s, %s, %s)
+            """, (name, email, phone, message))
+            conn.commit()
+            cursor.close()
+            conn.close()
+            return "Takk for at du kontaktet oss! Vi vil svare deg snart."
+        except Exception as e:
+            print(f"Error: {e}")
+            return "Error in sending message. Please try again.", 500
+
+    return render_template('contact.html')
+
+# Rute for reservasjon (GET og POST)
 @app.route('/reservation', methods=['GET', 'POST'])
 def reservation():
     if request.method == 'POST':
@@ -31,11 +61,20 @@ def reservation():
             date = request.form['date']
             time = request.form['time']
 
+            # Validering av dato og tid
+            reservation_date = datetime.strptime(date, "%Y-%m-%d").date()
+            today = datetime.today().date()
+            max_date = today + timedelta(days=30)
+
+            if reservation_date < today or reservation_date > max_date:
+                return "Datoen må være innenfor 30 dager fra i dag.", 400
+
             conn = get_db_connection()
             cursor = conn.cursor()
-            cursor.execute("""INSERT INTO reservations (name, phone, people, date, time,) 
-                              VALUES (%s, %s, %s, %s, %s, %s)""", 
-                           (name, phone, people, date, time,))
+            cursor.execute("""
+                INSERT INTO reservations (name, phone, people, date, time)
+                VALUES (%s, %s, %s, %s, %s)
+            """, (name, phone, people, date, time))
             conn.commit()
             cursor.close()
             conn.close()
@@ -43,9 +82,10 @@ def reservation():
         except Exception as e:
             print(f"Error: {e}")
             return "Error in processing reservation. Please try again.", 500
+
     return render_template('reservation.html')
 
-# Rute for visning av alle reservasjoner
+# Rute for visning av reservasjoner (liste)
 @app.route('/reservation_list', methods=['GET'])
 def reservation_list():
     try:
@@ -60,40 +100,41 @@ def reservation_list():
         print(f"Error: {e}")
         return "Error retrieving reservations.", 500
 
-# Rute for kontaktinformasjon
-@app.route('/contact', methods=['GET', 'POST'])
-def contact():
-    if request.method == 'POST':
-        name = request.form['name']
-        email = request.form['email']
-        phone = request.form['phone']
-        message = request.form['message']
+# Rute for å håndtere takeaway-bestillinger
+@app.route('/takeaway')
+def takeaway():
+    return render_template('takeaway.html')
 
-        # Logg mottatte data
-        print(f"Received data: name={name}, email={email}, phone={phone}, message={message}")
-        
-        try:
-            conn = get_db_connection()
-            cursor = conn.cursor()
-            
-            # Logg tilkobling og spørring
-            print("Inserting data into contact_info...")
-            cursor.execute("""
-                INSERT INTO contact_info (name, email, phone, message) 
-                VALUES (%s, %s, %s, %s)
-            """, (name, email, phone, message))
-            
-            conn.commit()
-            print("Data inserted successfully")
-            cursor.close()
-            conn.close()
+@app.route('/takeaway_orders', methods=['POST'])
+def add_takeaway_order():
+    data = request.json
+    try:
+        # Koble til databasen
+        conn = get_db_connection()
+        cursor = conn.cursor()
 
-            return "Takk for at du kontaktet oss! Vi vil svare deg snart."
-        except Exception as e:
-            print(f"Error: {e}")
-            return "Error in sending message. Please try again.", 500
+        # Skriv ut dataene som mottas
+        print(f"Received order: {data}")
 
-    return render_template('contact.html')
+        # Sett inn takeaway-bestilling i databasen
+        cursor.execute("""
+            INSERT INTO takeaway_orders (name, dish)
+            VALUES (%s, %s)
+        """, (data['name'], data['dish']))
+
+        # Bekreft og lukk tilkoblingen
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        # Skriv ut en suksessmelding
+        print("Order successfully added to the database.")
+
+        return jsonify({'success': True})
+    except Exception as e:
+        print(f"Error: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 
 
 

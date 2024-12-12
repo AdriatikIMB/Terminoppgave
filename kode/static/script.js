@@ -58,3 +58,39 @@ function validateForm() {
         return false;
     }
 }
+
+
+ // Handle form submission and send JSON data to Flask server
+ document.getElementById('takeawayForm').addEventListener('submit', function(event) {
+    event.preventDefault();  // Prevent form from reloading the page
+
+    const name = document.getElementById('takeawayName').value;
+    const dish = document.getElementById('dish').value;
+
+    const orderData = {
+        name: name,
+        dish: dish
+    };
+
+    // Send the order as a JSON object to the backend
+    fetch('/takeaway_orders', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(orderData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        const responseMessage = document.getElementById('responseMessage');
+        if (data.success) {
+            responseMessage.innerHTML = 'Bestillingen ble sendt!';
+        } else {
+            responseMessage.innerHTML = 'Noe gikk galt. Prøv igjen.';
+        }
+    })
+    .catch(error => {
+        document.getElementById('responseMessage').innerHTML = 'Feil ved sending av bestilling. Vennligst prøv igjen.';
+        console.error('Error:', error);
+    });
+});

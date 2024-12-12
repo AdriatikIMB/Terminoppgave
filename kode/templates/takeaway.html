@@ -11,7 +11,7 @@
         <h1>Bestill Takeaway</h1>
     </header>
     <main>
-        <form id="takeawayForm" onsubmit="handleTakeawaySubmit(event)">
+        <form id="takeawayForm">
             <label for="takeawayName">Navn:</label>
             <input type="text" id="takeawayName" required>
 
@@ -26,7 +26,13 @@
             <button type="submit">Bestill</button>        
         </form>
         <a href="{{ url_for('index') }}"><button>Tilbake til hovedmeny</button></a>
+
+        <div id="responseMessage"></div>
     </main>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+
+       
+  
 </body>
 </html>

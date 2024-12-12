@@ -20,6 +20,6 @@ def contact():
         # Her kan du lagre data eller sende e-post
         print(f"Navn: {name}, E-post: {email}, Melding: {message}")
         
-        return "Takk for at du kontaktet oss! Vi vil svare deg snart."
+        return "Takk for at du reserverte bord! Vi vil svare deg snart."
     
     return render_template('contact.html')
