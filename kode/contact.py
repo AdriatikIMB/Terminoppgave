@@ -1,25 +1,24 @@
-from flask import Flask, render_template, request 
+from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
-@app.route("/")
-def contact():
-    return render_template("contact.html")
-
-if __name__ == "__main__":
-    app.run(debug=True)
-
-    
-@app.route('/contact', methods=['GET', 'POST'])
+# Rute for kontaktsiden (hjemmeside)
+@app.route("/", methods=["GET", "POST"])
 def contact():
     if request.method == 'POST':
+        # Henter data fra kontaktskjemaet
         name = request.form['name']
         email = request.form['email']
         message = request.form['message']
         
-        # Her kan du lagre data eller sende e-post
         print(f"Navn: {name}, E-post: {email}, Melding: {message}")
         
-        return "Takk for at du reserverte bord!"
-    
-    return render_template('contact.html')
+        # Bekreftelse til brukeren
+        return "Takk for at du kontaktet oss! Vi vil komme tilbake til deg snart."
+
+    return render_template("contact.html")  # Vist hvis GET-metode brukes, viser kontaktskjemaet
+
+
+# Starter Flask-applikasjonen
+if __name__ == "__main__":
+    app.run(debug=True)
