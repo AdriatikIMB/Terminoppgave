@@ -12,9 +12,6 @@ def contact():
         message = request.form['message']
         
         print(f"Navn: {name}, E-post: {email}, Melding: {message}")
-        
-        # Bekreftelse til brukeren
-        return "Takk for at du kontaktet oss! Vi vil komme tilbake til deg snart."
 
     return render_template("contact.html")  # Vist hvis GET-metode brukes, viser kontaktskjemaet
 
