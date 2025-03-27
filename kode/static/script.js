@@ -59,9 +59,8 @@ function validateForm() {
     }
 }
 
-
- // Handle form submission and send JSON data to Flask server
- document.getElementById('takeawayForm').addEventListener('submit', function(event) {
+// Handle form submission and send JSON data to Flask server
+document.getElementById('takeawayForm')?.addEventListener('submit', function(event) {
     event.preventDefault();  // Prevent form from reloading the page
 
     const name = document.getElementById('takeawayName').value;

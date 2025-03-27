@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reservasjoner</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Reservasjoner</h1>
+    </header>
+    <main>
+        {% if reservasjoner %}
+            <table border="1">
+                <thead>
+                    <tr>
+                        <th>Navn</th>
+                        <th>Telefon</th>
+                        <th>Antall Personer</th>
+                        <th>Dato</th>
+                        <th>Tid</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for res in reservasjoner %}
+                    <tr>
+                        <td>{{ res.name }}</td>
+                        <td>{{ res.phone }}</td>
+                        <td>{{ res.people }}</td>
+                        <td>{{ res.date }}</td>
+                        <td>{{ res.time }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>Ingen reservasjoner funnet.</p>
+        {% endif %}
+        <a href="{{ url_for('index') }}"><button>Tilbake til hovedmeny</button></a>
+    </main>
+</body>
+</html>
